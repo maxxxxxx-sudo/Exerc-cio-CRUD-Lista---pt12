@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romaneio e Caminhão</title>
+</head>
+<body>
+    <script>
+      // Fila do romaneio (FIFO): entra no fim, sai da frente
+      var fila = {inicio: null, fim: null, tamanho: 0};
+
+      // Pilha do caminhão (LIFO): entra no topo, sai do topo
+      var pilha = {topo: null, tamanho: 0};
+
+      var MAX = 5;
+
+      function criaNo(codigo) {
+          return {
+              dado: codigo,
+              proximo: null
+          };
+      }
+
+      // Opção 1: inclui pacote no fim da fila
+      function incluirNoRomaneio() {
+          if (fila.tamanho >= MAX) {
+              alert("Romaneio cheio (máximo de " + MAX + " pacotes)!");
+              return;
+          }
+
+          let codigo = prompt("Digite o código do pacote:");
+          if (codigo == null || codigo.trim() == "") {
+              alert("Código inválido!");
+              return;
+          }
+
+          let novo = criaNo(codigo.trim());
+          if (fila.inicio == null) {
+              fila.inicio = novo;
+              fila.fim = novo;
+          } else {
+              fila.fim.proximo = novo;
+              fila.fim = novo;
+          }
+          fila.tamanho++;
+          alert("Pacote " + novo.dado + " incluído no romaneio.");
+      }
+
+      // Opção 2: retira da frente da fila e coloca no topo da pilha
+      function carregar() {
+          if (fila.inicio == null) {
+              alert("Romaneio vazio! Não há pacote para carregar.");
+              return;
+          }
+          if (pilha.tamanho >= MAX) {
+              alert("Caminhão cheio! O pacote permanece no romaneio.");
+              return;
+          }
+
+          // retira da frente da fila
+          let no = fila.inicio;
+          fila.inicio = no.proximo;
+          if (fila.inicio == null) {
+              fila.fim = null;
+          }
+          fila.tamanho--;
+
+          // coloca no topo da pilha
+          no.proximo = pilha.topo;
+          pilha.topo = no;
+          pilha.tamanho++;
+
+          alert("Pacote " + no.dado + " carregado no caminhão.");
+      }
+
+      // Opção 3: retira o pacote do topo da pilha e mostra
+      function retirarDoCaminhao() {
+          if (pilha.topo == null) {
+              alert("Caminhão vazio! Não há pacote para retirar.");
+              return;
+          }
+
+          let no = pilha.topo;
+          pilha.topo = no.proximo;
+          pilha.tamanho--;
+
+          alert("Pacote retirado do topo do caminhão: " + no.dado);
+      }
+
+      // Opção 4: mostra fila (frente ao fim) e pilha (base ao topo)
+      function mostrar() {
+          let textoFila = "";
+          let atual = fila.inicio;
+          while (atual != null) {
+              textoFila += atual.dado + " ";
+              atual = atual.proximo;
+          }
+          if (textoFila == "") textoFila = "(vazio)";
+
+          // a pilha encadeada vai do topo à base, então inverto para mostrar da base ao topo
+          let itens = [];
+          atual = pilha.topo;
+          while (atual != null) {
+              itens.unshift(atual.dado);
+              atual = atual.proximo;
+          }
+          let textoPilha = itens.length > 0 ? itens.join(" ") : "(vazio)";
+
+          alert(
+              "ROMANEIO (frente -> fim):\n" + textoFila + "\n\n" +
+              "CAMINHÃO (base -> topo):\n" + textoPilha
+          );
+      }
+
+      function menu() {
+          let opcao;
+
+          do {
+              opcao = prompt(
+                  "Menu\n" +
+                  "1 - Incluir pacote no romaneio\n" +
+                  "2 - Retirar da fila e carregar\n" +
+                  "3 - Retirar pacote do caminhão\n" +
+                  "4 - Mostrar romaneio e caminhão\n" +
+                  "0 - Encerrar"
+              );
+
+              if (opcao == 1) {
+                  incluirNoRomaneio();
+              } else if (opcao == 2) {
+                  carregar();
+              } else if (opcao == 3) {
+                  retirarDoCaminhao();
+              } else if (opcao == 4) {
+                  mostrar();
+              } else if (opcao == 0) {
+                  alert("Encerrando...");
+              } else {
+                  alert("Opção Inválida...");
+              }
+
+          } while (opcao != 0);
+      }
+
+      menu();
+    </script>
+</body>
+</html>
